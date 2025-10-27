@@ -3,6 +3,7 @@ from .extensions import db, migrate
 from app.logger import log
 from flask_mail import Mail
 from app.config import Config
+from flask_cors import CORS
 import os
 
 mail = Mail()
@@ -21,6 +22,8 @@ def create_app():
     from .auth.routes import auth_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
+
+    CORS(app)
 
     log.info(f"✅ Flask app starting in {config_name} mode")
     log.debug("Debug logs are enabled")
