@@ -147,3 +147,20 @@ class AuthService:
 
         token = AuthService.generate_jwt(user)
         return user, token
+
+    @staticmethod
+    def login_or_register_github_user(email, name):
+        """GitHub 登录：如果用户存在就登录，否则注册"""
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            user = User(
+                username=name,
+                email=email,
+                is_verified=True,
+            )
+            db.session.add(user)
+            db.session.commit()
+
+        token = AuthService.generate_jwt(user)
+        return user, token

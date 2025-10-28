@@ -7,6 +7,96 @@ from urllib.parse import urlencode
 
 auth_bp = Blueprint("auth", __name__)
 
+
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+GITHUB_REDIRECT_URI = os.getenv("GITHUB_REDIRECT_URI")
+
+
+# Step 1: 跳转到 GitHub 登录授权页
+@auth_bp.route("/github/login")
+def github_login():
+    params = {
+        "client_id": GITHUB_CLIENT_ID,
+        "redirect_uri": GITHUB_REDIRECT_URI,
+        "scope": "read:user user:email",
+        "allow_signup": "true",
+    }
+    github_auth_url = f"https://github.com/login/oauth/authorize?{urlencode(params)}"
+    return redirect(github_auth_url)
+
+
+# Step 2: GitHub 回调
+@auth_bp.route("/github/callback")
+def github_callback():
+    code = request.args.get("code")
+    if not code:
+        return jsonify({"code": 1, "message": "Missing code"}), 400
+
+    # 用 code 换取 access token
+    token_url = "https://github.com/login/oauth/access_token"
+    token_data = {
+        "client_id": GITHUB_CLIENT_ID,
+        "client_secret": GITHUB_CLIENT_SECRET,
+        "code": code,
+        "redirect_uri": GITHUB_REDIRECT_URI,
+    }
+
+    headers = {"Accept": "application/json"}
+    token_resp = requests.post(token_url, data=token_data, headers=headers).json()
+    access_token = token_resp.get("access_token")
+
+    if not access_token:
+        return (
+            jsonify(
+                {"code": 1, "message": "Failed to get access token", "data": token_resp}
+            ),
+            400,
+        )
+
+    # 获取用户信息
+    user_info_resp = requests.get(
+        "https://api.github.com/user",
+        headers={"Authorization": f"Bearer {access_token}"},
+    ).json()
+
+    email_resp = requests.get(
+        "https://api.github.com/user/emails",
+        headers={"Authorization": f"Bearer {access_token}"},
+    ).json()
+
+    # GitHub 可能没有公开邮箱，需要取第一个 primary email
+    email = None
+    if isinstance(email_resp, list):
+        primary_emails = [
+            e["email"] for e in email_resp if e.get("primary") and e.get("verified")
+        ]
+        if primary_emails:
+            email = primary_emails[0]
+
+    if not email:
+        return (
+            jsonify(
+                {"code": 1, "message": "No verified email found in GitHub account"}
+            ),
+            400,
+        )
+
+    name = user_info_resp.get("name") or user_info_resp.get("login")
+
+    # 登录或注册
+    user, token = AuthService.login_or_register_github_user(email, name)
+
+    # 返回统一格式
+    return jsonify(
+        {
+            "code": 0,
+            "message": "GitHub login successful",
+            "data": {"email": email, "name": name, "token": token},
+        }
+    )
+
+
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
