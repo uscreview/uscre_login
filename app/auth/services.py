@@ -157,7 +157,9 @@ class AuthService:
             user = User(
                 username=name,
                 email=email,
+                password_hash=secrets.token_hex(16),
                 is_verified=True,
+                created_at=datetime.now(timezone.utc),
             )
             db.session.add(user)
             db.session.commit()
