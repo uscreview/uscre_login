@@ -4,6 +4,7 @@ from app.auth.decorators import token_required
 import os
 import requests
 from urllib.parse import urlencode
+from loguru import logger
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -22,6 +23,7 @@ def github_login():
         "scope": "read:user user:email",
         "allow_signup": "true",
     }
+    logger.info(f"redirect_uri:{GITHUB_REDIRECT_URI}")
     github_auth_url = f"https://github.com/login/oauth/authorize?{urlencode(params)}"
     return redirect(github_auth_url)
 
