@@ -3,7 +3,7 @@ import os
 from loguru import logger
 
 # 日志文件路径
-LOG_DIR = "logs"
+LOG_DIR = os.getenv("LOG_DIR", "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
 
 LOG_FILE_PATH = os.path.join(LOG_DIR, "app.log")
@@ -30,10 +30,10 @@ logger.add(
 # 输出到文件（每天新文件，保留7天）
 logger.add(
     LOG_FILE_PATH,
-    rotation="00:00",   # 每天凌晨新文件
-    retention="7 days", # 保留7天
+    rotation="00:00",  # 每天凌晨新文件
+    retention="7 days",  # 保留7天
     encoding="utf-8",
-    enqueue=True,       # 多线程安全
+    enqueue=True,  # 多线程安全
     level="INFO",
     format=LOG_FORMAT,
 )
