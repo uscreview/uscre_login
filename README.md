@@ -3,4 +3,4 @@ USCRE Login Service 是一个基于 Flask 的用户认证与授权服务，支�
 
 # API 文档
 
-[API 文档](../doc/API.md)
+[API 文档](./doc/API.md)
