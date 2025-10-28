@@ -199,7 +199,7 @@
 }
 ```
 
-## 第三方 OAuth 登录（Google / GitHub）
+## 第三方 OAuth 登录（Google / GitHub）接口列表
 
 该项目在 `app/auth/routes.py` 中同时实现了 GitHub 与 Google 的 OAuth 登录流程。路由基准路径为 `/api/v1/auth/`（视 Blueprint 注册前缀而定）。下面列出常用端点及其行为：
 
@@ -211,7 +211,7 @@
 - 2) 授权回调 — `GET` `/api/v1/auth/github/callback?code=<code>`
     - 功能：从查询参数读取 `code`，用该 code 向 GitHub 换取 access token，然后使用该 token 获取用户信息与邮箱列表。若找到经过验证的 primary 邮箱，会使用该邮箱登录或注册（通过服务层 `AuthService.login_or_register_github_user`），并返回应用内 JWT token。
 
-成功响应示例 (200)：
+#### 成功响应示例 (200)：
 ```json
 {
     "code": 0,
@@ -220,7 +220,7 @@
 }
 ```
 
-错误/异常响应示例：
+#### 错误响应：
 - `400` 缺少 code：
 ```json
 {
@@ -254,7 +254,7 @@
 - 2) 授权回调 — `GET` `/api/v1/auth/google/callback?code=<code>`
     - 功能：用 `code` 交换 access token（向 `https://oauth2.googleapis.com/token`），然后用 access token 请求用户信息（`/oauth2/v3/userinfo`）。使用返回的 email/name 调用 `AuthService.login_or_register_google_user`，并返回应用内 JWT token。
 
-成功响应示例 (200)：
+#### 成功响应示例 (200)：
 ```json
 {
     "code": 0,
@@ -263,7 +263,7 @@
 }
 ```
 
-错误/异常响应示例：
+#### 错误响应：
 - `400` 缺少 code：
 ```json
 {
@@ -292,7 +292,7 @@
 - 所有密码相关操作使用安全哈希存储
 
 ### 数据验证
-- 用户名唯一性检查
+- 用户名无唯一性验证
 - 邮箱唯一性检查
 - 邮箱验证流程（发送邮件 + 回调验证）
 
@@ -301,8 +301,14 @@
 - 可配置的邮件服务器设置（见环境变量配置）
 
 ### 环境变量配置
-- `DATABASE_URL`: 数据库连接 URL
 - `JWT_SECRET_KEY`: JWT 签名密钥
+- `MYSQL_ROOT_PASSWORD`: MySQL 根密码
+- `MYSQL_DATABASE`: MySQL 数据库名称
+- `PORT`: 应用监听端口
+- `ADDRESS`: 应用监听地址
+- `LOG_DIR`: 日志文件目录
+- `FLASK_ENV`: Flask 环境（默认：development）
+
 - `MAIL_SERVER`: SMTP 服务器地址（默认：smtp.gmail.com）
 - `MAIL_PORT`: SMTP 端口（默认：465）
 - `MAIL_USE_TLS`: 是否使用 TLS（默认：False）
@@ -311,3 +317,11 @@
 - `MAIL_PASSWORD`: SMTP 密码
 - `MAIL_SENDER_NAME`: 发件人名称（默认：USCRE）
 - `MAIL_SENDER_EMAIL`: 发件人邮箱（默认：与 MAIL_USERNAME 相同）
+
+- `GOOGLE_CLIENT_ID`: Google 客户端 ID
+- `GOOGLE_CLIENT_SECRET`: Google 客户端密钥
+- `GOOGLE_REDIRECT_URI`: Google 授权回调 URI
+
+- `GITHUB_CLIENT_ID`: GitHub 客户端 ID
+- `GITHUB_CLIENT_SECRET`: GitHub 客户端密钥
+- `GITHUB_REDIRECT_URI`: GitHub 授权回调 URI
