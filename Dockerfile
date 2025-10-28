@@ -11,5 +11,8 @@ ENV PATH="/root/.local/bin:${PATH}"
 WORKDIR /app
 COPY . .
 
-# 默认执行 uv sync
-CMD ["uv", "sync"]
+# 构建阶段同步 uv 环境
+RUN uv sync
+
+# 容器启动时运行你的应用
+CMD ["uv", "run", "main.py"]
