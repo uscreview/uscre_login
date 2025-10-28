@@ -203,7 +203,7 @@
 
 该项目在 `app/auth/routes.py` 中同时实现了 GitHub 与 Google 的 OAuth 登录流程。路由基准路径为 `/api/v1/auth/`（视 Blueprint 注册前缀而定）。下面列出常用端点及其行为：
 
-### GitHub 登录
+### 5. GitHub 登录
 
 - 1) 跳转到 GitHub 授权页 — `GET` `/api/v1/auth/github/login`
     - 功能：将用户重定向到 GitHub 的 OAuth 授权页面。无需请求体或特殊 header。
@@ -246,7 +246,7 @@
 }
 ```
 
-### Google 登录
+### 6. Google 登录
 
 - 1) 跳转到 Google 授权页 — `GET` `/api/v1/auth/google/login`
     - 功能：重定向到 Google 的 OAuth 授权页面，使用 `scope=open id email profile` 等参数。
