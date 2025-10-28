@@ -23,7 +23,7 @@ def github_login():
         "scope": "read:user user:email",
         "allow_signup": "true",
     }
-    logger.info(f"redirect_uri:{GITHUB_REDIRECT_URI}")
+    logger.info(f"redirect_uri:{GITHUB_REDIRECT_URI}\nclient_id:{GITHUB_CLIENT_ID}")
     github_auth_url = f"https://github.com/login/oauth/authorize?{urlencode(params)}"
     return redirect(github_auth_url)
 
