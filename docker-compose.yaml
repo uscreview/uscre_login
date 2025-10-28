@@ -23,6 +23,7 @@ services:
       - "8082:8082"
     volumes:
       - .:/app
+      - ./logs:/tmp/uscre_logs
 
 volumes:
   db_data:
