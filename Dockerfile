@@ -15,4 +15,4 @@ COPY . .
 RUN uv sync
 
 # 容器启动时运行你的应用
-CMD ["uv", "run", "main.py"]
+CMD [".venv/bin/gunicorn -w 5 -b 0.0.0.0:8082 main:app"]

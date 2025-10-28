@@ -15,7 +15,7 @@ services:
     build: .
     container_name: uscre-login
     environment:
-      - DATABASE_URL=mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}?charset=utf8mb4
+      - SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}?charset=utf8mb4
       - PYTHONUNBUFFERED=1
     depends_on:
       - db
