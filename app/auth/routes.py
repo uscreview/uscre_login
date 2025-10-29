@@ -12,6 +12,7 @@ auth_bp = Blueprint("auth", __name__)
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 GITHUB_REDIRECT_URI = os.getenv("GITHUB_REDIRECT_URI")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")  # 默认是本地开发地址
 
 
 # Step 1: 跳转到 GitHub 登录授权页
@@ -90,13 +91,16 @@ def github_callback():
     user, token = AuthService.login_or_register_github_user(email, name)
 
     # 返回统一格式
-    return jsonify(
-        {
-            "code": 0,
-            "message": "GitHub login successful",
-            "data": {"email": email, "name": name, "token": token},
-        }
-    )
+    # return jsonify(
+    #     {
+    #         "code": 0,
+    #         "message": "GitHub login successful",
+    #         "data": {"email": email, "name": name, "token": token},
+    #     }
+    # )
+
+    frontend_callback_url = f"{FRONTEND_URL}/oauth-callback?token={token}"
+    return redirect(frontend_callback_url)
 
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
@@ -159,13 +163,15 @@ def google_callback():
 
     user, token = AuthService.login_or_register_google_user(email, name)
 
-    return jsonify(
-        {
-            "code": 0,
-            "message": "Google login successful",
-            "data": {"email": email, "name": name, "token": token},
-        }
-    )
+    # return jsonify(
+    #     {
+    #         "code": 0,
+    #         "message": "Google login successful",
+    #         "data": {"email": email, "name": name, "token": token},
+    #     }
+    # )
+    frontend_callback_url = f"{FRONTEND_URL}/oauth-callback?token={token}"
+    return redirect(frontend_callback_url)
 
 
 # 注册
@@ -223,7 +229,9 @@ def login():
     if not token:
         return jsonify({"code": 1, "message": message}), 401
 
-    return jsonify({"code": 0, "message": message, "data": {"token": token}})
+    # return jsonify({"code": 0, "message": message, "data": {"token": token}})
+    frontend_callback_url = f"{FRONTEND_URL}/oauth-callback?token={token}"
+    return redirect(frontend_callback_url)
 
 
 # 获取用户信息（受保护接口）
