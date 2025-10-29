@@ -13,6 +13,7 @@ COPY . .
 
 # 构建阶段同步 uv 环境
 RUN uv sync
+RUN uv add gunicorn
 
 # 容器启动时运行你的应用
 CMD [".venv/bin/gunicorn", "-w", "5", "-b", "0.0.0.0:8082", "main:app"]
